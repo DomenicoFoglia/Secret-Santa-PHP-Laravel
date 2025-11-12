@@ -20,12 +20,11 @@
                             class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Visualizza</a>
                         <a href="#"
                             class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Modifica</a>
-                        <form action="#" method="POST" class="inline">
+                        <form action="{{ route('secret-santas.destroy', $santa->id) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
                                 class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Elimina</button>
-
                         </form>
 
                     </div>

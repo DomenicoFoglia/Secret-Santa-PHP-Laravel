@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SecretSanta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -59,6 +60,14 @@ class SecretSantaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $santa = SecretSanta::findOrfail($id);
+
+        if (Auth::id() !== $santa->user_id()) {
+            abort(403);
+        }
+
+        $santa->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Secret Santa eliminato con successo!');
     }
 }
