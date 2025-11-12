@@ -45,4 +45,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function secretSantas()
+    {
+        return $this->hasMany(SecretSanta::class);
+    }
 }
