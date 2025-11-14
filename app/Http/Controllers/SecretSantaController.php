@@ -21,14 +21,36 @@ class SecretSantaController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {}
+    public function create()
+    {
+        return view('secret-santas.create');
+    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'participants' => 'required|array|min:1',
+        //     'participants.*.name' => 'required|string|max:255',
+        //     'participants.*.email' => 'required|email|unique:participants,email',
+        // ]);
+
+        // $secretSanta = SecretSanta::create([
+        //     'name' => $request->name,
+        //     'user_id' => Auth::id(),
+        // ]);
+
+        // foreach ($request->participants as $p) {
+        //     $secretSanta->participants()->create([
+        //         'name' => $p['name'],
+        //         'email' => $p['email'],
+        //     ]);
+        // }
+
+        // return redirect()->route('dashboard')->with('message', 'Secret Santa creato con successo!');
     }
 
     /**
@@ -60,9 +82,9 @@ class SecretSantaController extends Controller
      */
     public function destroy(string $id)
     {
-        $santa = SecretSanta::findOrfail($id);
+        $santa = SecretSanta::findOrFail($id);
 
-        if (Auth::id() !== $santa->user_id()) {
+        if (Auth::id() !== $santa->user_id) {
             abort(403);
         }
 

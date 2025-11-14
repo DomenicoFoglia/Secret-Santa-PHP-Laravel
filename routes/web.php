@@ -6,14 +6,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SecretSantaController;
 
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()) {
+        return redirect()->route('dashboard');
+    } else {
+        return redirect()->route('login');
+    }
 });
 
 // Dashboard e gestione secret santas
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [SecretSantaController::class, 'index'])->name('dashboard');
     Route::get('/secret-santas/create', [SecretSantaController::class, 'create'])->name('secret-santas.create');
-    Route::post('/secret-santas', [SecretSantaController::class, 'store'])->name('secret-santas.store');
+    // Route::post('/secret-santas', [SecretSantaController::class, 'store'])->name('secret-santas.store');
     Route::delete('/secret-santas/{id}', [SecretSantaController::class, 'destroy'])->name('secret-santas.destroy');
 });
 
