@@ -74,7 +74,15 @@ class SecretSantaController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $secretSanta = SecretSanta::findOrFail($id);
+
+        if ($secretSanta->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $participants = $secretSanta->participants;
+
+        return view('secret-santas.edit', compact('secretSanta', 'participants'));
     }
 
     /**

@@ -34,7 +34,7 @@
                                 🔍 Visualizza
                             </a>
 
-                            <a href="#"
+                            <a href="{{ route('secret-santas.edit', $secretSanta->id) }}"
                                 class="bg-yellow-500 text-white px-3 py-2 text-sm rounded-lg font-medium hover:bg-yellow-600 transition duration-150 ease-in-out">
                                 ✏️ Modifica
                             </a>

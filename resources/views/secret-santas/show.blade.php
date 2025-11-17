@@ -29,7 +29,7 @@
             {{-- Pulsanti azione evento --}}
             <div class="flex flex-wrap gap-4 items-center">
 
-                <a href="#"
+                <a href="{{ route('secret-santas.edit', $secretSanta->id) }}"
                     class="px-5 py-3 rounded-lg font-medium bg-yellow-500 text-white hover:bg-yellow-600 transition duration-150 ease-in-out shadow-md">
                     ✏️ Modifica Evento
                 </a>
