@@ -82,7 +82,10 @@ class SecretSantaController extends Controller
 
         $participants = $secretSanta->participants;
 
-        return view('secret-santas.edit', compact('secretSanta', 'participants'));
+        return view('secret-santas.edit', [
+            'secretSanta' => $secretSanta,
+            'participants' => $participants,
+        ]);
     }
 
     /**
