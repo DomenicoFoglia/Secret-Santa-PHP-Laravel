@@ -2,33 +2,41 @@
 
 
     <div class="max-w-3xl mx-auto mt-10">
-        <h1 class="text-2xl font-bold mb-4 text-center">I miei Secret Santa</h1>
 
-        <div class="mb-4">
+        <h1 class="text-3xl font-extrabold mb-8 text-center text-gray-800">
+            🎁 I miei Secret Santa
+        </h1>
+
+        <div class="mb-8 text-center">
             <a href="{{ route('secret-santas.create') }}"
-                class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+                class="px-5 py-3 rounded-lg font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition duration-150 ease-in-out shadow-lg transform hover:scale-[1.01]">
                 + Crea un nuovo Secret Santa +
             </a>
         </div>
 
         @if ($secretSantas->count())
-            <ul class="space-y-2 bg-amber-200">
+            <ul class="space-y-4">
                 @foreach ($secretSantas as $secretSanta)
-                    <li class="border p-3 rounded flex justify-between items-center">
-                        <div>
-                            <span class="font-semibold">{{ $secretSanta->name }}</span>
-                            <span class="text-sm text-gray-500 ml-2">
-                                {{ $secretSanta->created_at->format('d/m/y') }}
+                    <li
+                        class="bg-white p-5 rounded-xl shadow-lg border border-gray-100 flex justify-between items-center transition duration-150 ease-in-out hover:shadow-xl hover:border-indigo-200">
+
+                        <div class="mr-6">
+                            <span class="text-xl font-bold text-gray-800 block">{{ $secretSanta->name }}</span>
+                            <span class="text-sm text-gray-500 mt-1 flex items-center">
+                                📅 Creato il: {{ $secretSanta->created_at->format('d/m/Y') }}
                             </span>
                         </div>
 
-                        <div class="space-x-2">
-                            <a href="#" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
-                                Visualizza
+                        <div class="flex space-x-2 items-center">
+
+                            <a href="{{ route('secret-santas.show', $secretSanta->id) }}"
+                                class="bg-blue-600 text-white px-3 py-2 text-sm rounded-lg font-medium hover:bg-blue-700 transition duration-150 ease-in-out">
+                                🔍 Visualizza
                             </a>
 
-                            <a href="#" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">
-                                Modifica
+                            <a href="#"
+                                class="bg-yellow-500 text-white px-3 py-2 text-sm rounded-lg font-medium hover:bg-yellow-600 transition duration-150 ease-in-out">
+                                ✏️ Modifica
                             </a>
 
                             <form action="{{ route('secret-santas.destroy', $secretSanta->id) }}" method="POST"
@@ -36,8 +44,10 @@
                                 @csrf
                                 @method('DELETE')
 
-                                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
-                                    Elimina
+                                <button type="submit"
+                                    class="bg-red-500 text-white px-3 py-2 text-sm rounded-lg font-medium hover:bg-red-600 transition duration-150 ease-in-out"
+                                    onclick="return confirm('Sei sicuro di voler eliminare {{ $secretSanta->name }}?');">
+                                    🗑️ Elimina
                                 </button>
                             </form>
                         </div>
@@ -45,7 +55,10 @@
                 @endforeach
             </ul>
         @else
-            <p class="text-gray-600">Non hai ancora creato nessun Secret Santa.</p>
+            <div class="p-6 bg-white border border-dashed border-gray-400 rounded-lg text-center">
+                <p class="text-lg text-gray-700 font-semibold mb-2">Non hai ancora creato nessun Secret Santa.</p>
+                <p class="text-gray-500">Inizia ora per organizzare la tua festa natalizia!</p>
+            </div>
         @endif
 
 

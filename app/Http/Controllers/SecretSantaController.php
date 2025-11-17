@@ -58,7 +58,15 @@ class SecretSantaController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $secretSanta = SecretSanta::findOrFail($id);
+
+        if ($secretSanta->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $participants = $secretSanta->participants;
+
+        return view('secret-santas.show', compact('secretSanta', 'participants'));
     }
 
     /**
