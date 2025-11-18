@@ -1,4 +1,15 @@
 <x-layout>
+    @if (session('success'))
+        <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-800 border border-green-300">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-4 p-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
+            {{ session('error') }}
+        </div>
+    @endif
     <div class="max-w-4xl mx-auto p-6 lg:p-8 mt-4">
 
         {{-- Titolo --}}
@@ -45,10 +56,14 @@
                 </form>
 
                 {{-- Estrazione da fare --}}
-                <a href="#"
-                    class="px-5 py-3 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700 transition duration-150 ease-in-out shadow-md">
-                    🎉 Fai l'Estrazione
-                </a>
+
+                <form action="{{ route('secret-santas.draw', $secretSanta->id) }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit"
+                        class="px-5 py-3 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700 transition duration-150 ease-in-out shadow-md">🎉
+                        Fai l'Estrazione</button>
+                </form>
+
             </div>
 
             <hr class="my-6">
@@ -67,4 +82,21 @@
             </div>
         </div>
     </div>
+    @if ($draws->count() > 0)
+        <h2 class="text-2xl font-bold mb-4 text-gray-700 border-b pb-2">🎁 Risultati del Sorteggio</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            @foreach ($draws as $draw)
+                <div
+                    class="p-5 bg-white rounded-xl shadow-md border border-gray-200 transition duration-150 hover:shadow-lg hover:border-blue-300">
+                    <p class="text-gray-800 font-bold">
+                        {{ $draw->giver->name }} &rarr; {{ $draw->receiver->name }}
+                    </p>
+                    <p class="text-sm text-gray-500 mt-1 flex items-center">
+                        📧 {{ $draw->receiver->email }}
+                    </p>
+                </div>
+            @endforeach
+        </div>
+    @endif
 </x-layout>

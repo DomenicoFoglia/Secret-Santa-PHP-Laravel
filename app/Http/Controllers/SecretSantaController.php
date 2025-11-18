@@ -66,7 +66,9 @@ class SecretSantaController extends Controller
 
         $participants = $secretSanta->participants;
 
-        return view('secret-santas.show', compact('secretSanta', 'participants'));
+        $draws = $secretSanta->draws()->with(['giver', 'receiver'])->get();
+
+        return view('secret-santas.show', compact('secretSanta', 'participants', 'draws'));
     }
 
     /**
@@ -110,5 +112,25 @@ class SecretSantaController extends Controller
         $santa->delete();
 
         return redirect()->route('dashboard')->with('success', 'Secret Santa eliminato con successo!');
+    }
+
+    //Sorteggio
+    public function draw(string $id)
+    {
+        $secretSanta = SecretSanta::findOrFail($id);
+
+        if ($secretSanta->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        try {
+            $message = $secretSanta->performDraw();
+
+            session()->flash('success', $message);
+        } catch (\Exception $e) {
+            session()->flash('error', $e->getMessage());
+        }
+
+        return redirect()->route('secret-santas.show', $secretSanta->id);
     }
 }

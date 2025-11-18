@@ -21,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/secret-santas/edit/{id}', [SecretSantaController::class, 'edit'])->name('secret-santas.edit');
     // Route::post('/secret-santas', [SecretSantaController::class, 'store'])->name('secret-santas.store');
     Route::delete('/secret-santas/{id}', [SecretSantaController::class, 'destroy'])->name('secret-santas.destroy');
+    Route::post('/secret-santas/{id}/draw', [SecretSantaController::class, 'draw'])->name('secret-santas.draw');
 });
 
 
