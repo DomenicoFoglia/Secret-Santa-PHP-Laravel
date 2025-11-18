@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\SecretSanta;
 use Illuminate\Support\Facades\Auth;
 
 class EditSecretSanta extends Component
@@ -10,8 +11,9 @@ class EditSecretSanta extends Component
     public $secretSanta;
     public $name;
     public $participants = [];
+    protected $redirects = true;
 
-    public function mount($secretSanta)
+    public function mount(SecretSanta $secretSanta)
     {
         $this->secretSanta = $secretSanta;
         $this->name = $secretSanta->name;
@@ -96,8 +98,6 @@ class EditSecretSanta extends Component
 
         return redirect()->route('secret-santas.edit', $this->secretSanta->id);
     }
-
-    public function save() {}
 
 
     public function render()
