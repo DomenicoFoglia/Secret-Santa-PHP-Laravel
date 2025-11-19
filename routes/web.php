@@ -29,3 +29,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/participants', function () {
     return view('participants');
 })->name('participants');
+
+
+//Mail ai partecipanti
+Route::post('/secret-santas/{secreSanta}/send-emails', [SecretSantaController::class, 'sendEmails'])->middleware('auth')->name('secret-santas.send-emails');

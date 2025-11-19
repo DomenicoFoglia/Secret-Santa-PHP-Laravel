@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Draw;
+use App\Mail\GiftAssigned;
 use App\Models\SecretSanta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 class SecretSantaController extends Controller
 {
@@ -132,5 +136,42 @@ class SecretSantaController extends Controller
         }
 
         return redirect()->route('secret-santas.show', $secretSanta->id);
+    }
+
+    //Manda email - QUESTA È L'UNICA FUNZIONE MODIFICATA
+    public function sendEmails($id)
+    {
+        $secretSanta = SecretSanta::findOrFail($id);
+
+        if ($secretSanta->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $draws = $secretSanta->draws()->with(['giver', 'receiver'])->get();
+
+        if ($draws->isEmpty()) {
+            return redirect()->back()->with('error', 'Nessun sorteggio trovato.');
+        }
+
+        // Invia le email con delay crescente
+        $delay = 0;
+        foreach ($draws as $draw) {
+            $giver = $draw->giver;
+            $receiver = $draw->receiver;
+
+            $data = [
+                'receiver_name' => $giver->name,
+                'assigned_to' => $receiver->name,
+            ];
+
+            Mail::mailer('smtp')
+                ->to($giver->email)
+                ->later(now()->addSeconds($delay), new \App\Mail\GiftAssigned($data));
+
+            $delay += 10; // 3 secondi di delay tra una email e l'altra
+        }
+
+
+        return redirect()->back()->with('success', 'Email inviate correttamente!');
     }
 }

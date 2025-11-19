@@ -31,7 +31,7 @@ GiftChaos è un'applicazione web per organizzare facilmente eventi di **Secret S
 - Dashboard centrale con pulsanti ben visibili e schede per ogni Secret Santa  
 - Footer con copyright e link al profilo GitHub del creatore  
 
-### Screenshot della dashboard
+### Screenshots
 
 ![Dashboard](public/images/screenshoots/Dashboard.png)
 ![Creazione Secret Santa](public/images/screenshoots/Creazione.png)  

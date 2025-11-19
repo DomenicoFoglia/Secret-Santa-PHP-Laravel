@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Draw;
 use App\Models\Participant;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -30,62 +31,65 @@ class SecretSanta extends Model
 
     public function performDraw()
     {
-        //Recupero tutti i partecipanti
-        $givers = $this->participants;
+        $participants = $this->participants;
 
-        //Controllo che siano alemeno 2 (Se siete in 2 non vi serve e  ja -.-)
-        if ($givers->count() < 2) {
-            return false;
+        if ($participants->count() < 2) {
+            throw new \Exception('Servono almeno 2 partecipanti per il sorteggio.');
         }
 
-        // Elimina eventuali draw esistenti
-        $this->draws()->delete();
+        return DB::transaction(function () use ($participants) {
+            // Elimina eventuali draw esistenti
+            $this->draws()->delete();
 
-        //tentativi massimi per evitare un loop infinito
-        $maxAttempts = 100;
-        $attempt = 0;
+            // Converti in array per manipolazione
+            $participantIds = $participants->pluck('id')->all();
 
+            // Mescola i partecipanti
+            shuffle($participantIds);
 
-        do {
-
-            $attempt++;
-
-            //Controllo
-            $isValid = true;
-            //Array di supporto
             $draws = [];
+            $count = count($participantIds);
 
-            // Clona i donatori, li mescola e li assegna a ricevitori 
-            $receivers = $givers->shuffle();
-            $receiversArray = $receivers->values()->all();
+            // Crea un ciclo: ogni persona regala alla successiva
+            // L'ultimo regala al primo, creando un anello
+            for ($i = 0; $i < $count; $i++) {
+                $giverId = $participantIds[$i];
+                $receiverId = $participantIds[($i + 1) % $count];
 
-            //Cicliamo su i donatori
-            foreach ($givers as $index => $giver) {
-                $receiver = $receiversArray[$index];
-
-                // Verifica che non ci sia un "autoregalo", se lo trova interrompe il ciclo e ricomincia
-                if ($giver->id === $receiver->id) {
-                    $isValid = false;
-                    break;
-                }
-
-                // Se è valido, aggiungiamo la coppia all'array $draws
                 $draws[] = [
                     'secret_santa_id' => $this->id,
-                    'giver_id' => $giver->id,
-                    'receiver_id' => $receiver->id,
+                    'giver_id' => $giverId,
+                    'receiver_id' => $receiverId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
 
-            //Controllo sui tentativi, se si e' arrivati a 100 interrompi. Piu' che altro serve per non far sembrare che sia bloccato
-            if ($attempt >= $maxAttempts) {
-                throw new \Exception('Impossibile generare un draw valido. Riprova.');
-            }
-        } while (!$isValid);
+            // Inserimento
+            Draw::insert($draws);
 
-        //Salviamo tutto nella tabella
-        Draw::insert($draws);
+            return 'Sorteggio completato con successo!';
+        });
+    }
 
-        return 'Sorteggio completato con successo!';
+    /**
+     * Verifica se il sorteggio è stato già effettuato
+     */
+
+    public function hasDrawn(): bool
+    {
+        return $this->draws()->exists();
+    }
+
+    /**
+     * Statistiche 
+     */
+    public function getStats(): array
+    {
+        return [
+            'total_participants' => $this->participants()->count(),
+            'draws_completed' => $this->draws()->count(),
+            'is_complete' => $this->hasDrawn(),
+        ];
     }
 }

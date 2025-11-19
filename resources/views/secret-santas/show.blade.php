@@ -98,5 +98,15 @@
                 </div>
             @endforeach
         </div>
+
+        <form action="{{ route('secret-santas.send-emails', $secretSanta->id) }}" method="POST" class="mb-5">
+            @csrf
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Invia email
+                ai partecipanti</button>
+        </form>
+
+
     @endif
+
+
 </x-layout>
