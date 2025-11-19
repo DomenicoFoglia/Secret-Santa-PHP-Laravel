@@ -1,4 +1,4 @@
-<div class="p-8 max-w-lg mx-auto bg-white rounded-2xl shadow-xl mt-10">
+<div class="p-8 max-w-lg mx-auto bg-white rounded-2xl shadow-xl ">
 
     {{-- Titolo --}}
     <h2 class="text-3xl font-extrabold mb-6 text-gray-800 text-center">

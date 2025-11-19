@@ -1,13 +1,11 @@
 <x-layout>
-
-
-    <div class="max-w-3xl mx-auto ">
+    <div class="max-w-3xl px-4 ">
 
         {{-- <h1 class="text-3xl font-extrabold mb-8 text-center text-gray-800">
             🎁 I miei Secret Santa
         </h1> --}}
-        <div class="flex justify-center -mt-20">
-            <img src="{{ asset('images/GiftChaos-Logo-nobg.png') }}" alt="Logo" class="h-50">
+        <div class="flex justify-center -mt-10">
+            <img src="{{ asset('images/GiftChaos-Logo-nobg.png') }}" alt="Logo" class="h-48">
         </div>
 
 
