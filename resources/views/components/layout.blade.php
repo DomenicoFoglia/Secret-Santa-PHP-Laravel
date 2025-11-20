@@ -17,6 +17,8 @@
 
     <x-navbar />
 
+    <x-christmas-decorations />
+
     <div class="min-h-screen flex flex-col justify-center items-center bg-green-300 font-sans text-gray-900">
         {{ $slot }}
     </div>
