@@ -16,4 +16,9 @@ class Participant extends Model
     {
         return $this->belongsTo(SecretSanta::class);
     }
+
+    public function favoriteGifts()
+    {
+        return $this->hasMany(FavoriteGift::class);
+    }
 }

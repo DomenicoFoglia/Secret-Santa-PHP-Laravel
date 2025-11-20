@@ -9,18 +9,32 @@ class SecretSantaForm extends Component
 {
     public $name = '';
     public $participants = [
-        ['name' => '', 'email' => '']
+        ['name' => '', 'email' => '', 'favorite_gifts' => ['']]
     ];
 
     public function addParticipant()
     {
-        $this->participants[] = ['name' => '', 'email' => ''];
+        $this->participants[] = ['name' => '', 'email' => '', 'favorite_gifts' => ['']];
     }
 
     public function removeParticipant($index)
     {
         unset($this->participants[$index]);
         $this->participants = array_values($this->participants);
+    }
+
+    //Aggiungi regalo preferito
+    public function addFavoriteGift($participantIndex)
+    {
+        $this->participants[$participantIndex]['favorite_gifts'][] = '';
+    }
+
+    //Rimuovi regalo preferito
+    public function removeFavoriteGift($participantIndex, $giftIndex)
+    {
+        unset($this->participants[$participantIndex]['favorite_gift'][$giftIndex]);
+
+        $this->participants[$participantIndex]['favorite_gifts'] =  array_values($this->participants[$participantIndex]['favorite_gifts']);
     }
 
     public function save()
@@ -58,12 +72,25 @@ class SecretSantaForm extends Component
         ]);
 
         foreach ($this->participants as $p) {
-            $secretSanta->participants()->create($p);
+            // creo il partecipante
+            $participant = $secretSanta->participants()->create([
+                'name' => $p['name'],
+                'email' => $p['email'],
+            ]);
+
+            // creo tutti i regali preferiti del partecipante
+            foreach ($p['favorite_gifts'] as $giftName) {
+                if (!empty($giftName)) {
+                    $participant->favoriteGifts()->create([
+                        'name' => $giftName
+                    ]);
+                }
+            }
         }
 
         //reset
         $this->name = '';
-        $this->participants = [['name' => '', 'email' => '']];
+        $this->participants = [['name' => '', 'email' => '', 'favorite_gifts' => ['']]];
 
         session()->flash('message', 'Secret Santa creato con successo!');
     }

@@ -31,9 +31,29 @@
 
                         <button type="button" wire:click="removeParticipant({{ $index }})"
                             class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
-                            🗑️ Rimuovi
+                            🗑️ Rimuovi Partecipante
                         </button>
+                    </div>
 
+                    <div class="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                        <p class="font-semibold text-gray-500 mb-2">🎁 Regali preferiti:</p>
+
+                        @foreach ($participant['favorite_gifts'] as $giftIndex => $gift)
+                            <div class="flex items-center gap-2 mb-2">
+                                <input type="text"
+                                    wire:model="participants.{{ $index }}.favorite_gifts.{{ $giftIndex }}"
+                                    placeholder="Regalo preferito"
+                                    class="flex-1 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+
+                                <button type="button" wire:click="removeGift({{ $index }}, {{ $giftIndex }})"
+                                    class="text-red-600 hover:text-red-800 font-bold text-lg">×</button>
+                            </div>
+                        @endforeach
+
+                        <span wire:click="addGift({{ $index }})"
+                            class="text-green-600 cursor-pointer hover:text-green-800 font-medium text-sm">
+                            ➕ Aggiungi regalo
+                        </span>
                     </div>
                 @endforeach
             </div>

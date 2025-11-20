@@ -86,7 +86,7 @@ class SecretSantaController extends Controller
             abort(403);
         }
 
-        $participants = $secretSanta->participants;
+        $participants = $secretSanta->participants()->with('favoriteGifts')->get();
 
         return view('secret-santas.edit', [
             'secretSanta' => $secretSanta,
@@ -152,22 +152,25 @@ class SecretSantaController extends Controller
             return redirect()->back()->with('error', 'Nessun sorteggio trovato.');
         }
 
-        // Invia le email con delay 
+        // Invia le email
         $delay = 0;
         foreach ($draws as $draw) {
             $giver = $draw->giver;
             $receiver = $draw->receiver;
 
+            $favoriteGifts = $receiver->favoriteGifts()->pluck('name')->toArray();
+
             $data = [
                 'receiver_name' => $giver->name,
                 'assigned_to' => $receiver->name,
+                'assigned_gifts' => $favoriteGifts,
             ];
 
             Mail::mailer('smtp')
                 ->to($giver->email)
                 ->later(now()->addSeconds($delay), new \App\Mail\GiftAssigned($data));
 
-            $delay += 10;
+            $delay += 15; // 15 secondi tra ogni email per evitare rate limit
         }
 
 

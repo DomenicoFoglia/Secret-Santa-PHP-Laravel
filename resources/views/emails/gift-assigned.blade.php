@@ -28,6 +28,21 @@
                                 </strong>
                             </p>
 
+                            @if (isset($data['assigned_gifts']) && !empty($data['assigned_gifts']))
+                                <p style="font-size:18px; color:#000; margin-top:30px;">
+                                    🎁 I suoi regali preferiti sono:
+                                <ul style="text-align:left; margin:10px auto; max-width:400px;">
+                                    @foreach ($data['assigned_gifts'] as $gift)
+                                        <li style="font-size:16px; color:#4f46e5;">🎁 {{ $gift }}</li>
+                                    @endforeach
+                                </ul>
+                                </p>
+                            @else
+                                <p style="font-size:16px; color:#ff0000;">
+                                    Nessun regalo preferito scelto
+                                </p>
+                            @endif
+
                             <p style="font-size:14px; color:#777; margin-top:30px;">
                                 Buon divertimento e... sii creativo! ✨
                             </p>

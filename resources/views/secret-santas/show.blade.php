@@ -26,10 +26,31 @@
             @foreach ($participants as $participant)
                 <div
                     class="p-5 bg-white rounded-xl shadow-md border border-gray-200 transition duration-150 hover:shadow-lg hover:border-blue-300">
+
+                    {{-- Nome --}}
                     <h2 class="font-bold text-xl text-gray-800 truncate">{{ $participant->name }}</h2>
-                    <p class="text-sm text-gray-500 mt-1 flex items-center">
+
+                    {{-- Email --}}
+                    <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
                         📧 {{ $participant->email }}
                     </p>
+
+                    {{-- Regali preferiti --}}
+                    @if ($participant->favoriteGifts->count() > 0)
+                        <div class="mt-3">
+                            <h3 class="text-sm font-semibold text-gray-700 mb-1">🎁 Regali preferiti</h3>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach ($participant->favoriteGifts as $gift)
+                                    <span
+                                        class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 
+                         transition-transform transform hover:scale-105 hover:shadow-md cursor-pointer">
+                                        🎁 {{ $gift->name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                 </div>
             @endforeach
         </div>

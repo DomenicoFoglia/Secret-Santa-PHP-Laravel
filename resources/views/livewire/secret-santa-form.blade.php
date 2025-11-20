@@ -28,6 +28,8 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
+                            {{-- Nome --}}
+                            <label class="block text-sm font-semibold mb-1 text-gray-700">Nome</label>
                             <input type="text" placeholder="Nome" wire:model="participants.{{ $index }}.name"
                                 class="w-full border-gray-300 rounded-lg p-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @error("participants.$index.name")
@@ -35,13 +37,39 @@
                             @enderror
                         </div>
 
+                        {{-- Email --}}
                         <div>
+                            <label class="block text-sm font-semibold mb-1 text-gray-700">Email</label>
                             <input type="email" placeholder="Email"
                                 wire:model="participants.{{ $index }}.email"
                                 class="w-full border-gray-300 rounded-lg p-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @error("participants.$index.email")
                                 <span class="text-red-500 text-xs italic block mt-1">{{ $message }}</span>
                             @enderror
+                        </div>
+
+                        {{-- regali preferiti --}}
+                        <div class="mt-3">
+                            <label class="block text-sm font-semibold mb-1 text-gray-700">Regali preferiti</label>
+
+                            @foreach ($participant['favorite_gifts'] as $giftIndex => $gift)
+                                <div class="flex items-center mb-2">
+                                    <input type="text" placeholder="Nome regalo"
+                                        wire:model="participants.{{ $index }}.favorite_gifts.{{ $giftIndex }}"
+                                        class="w-full border-gray-300 rounded-lg p-2 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+
+                                    {{-- rimuovi regalo --}}
+                                    <button type="button"
+                                        wire:click="removeFavoriteGift({{ $index }}, {{ $giftIndex }})"
+                                        class="ml-2 text-red-600 hover:text-red-800 font-bold text-lg">×</button>
+                                </div>
+                            @endforeach
+
+                            {{-- Aggiungi regalo --}}
+                            <button type="button" wire:click="addFavoriteGift({{ $index }})"
+                                class="mt-2 text-indigo-600 text-sm font-semibold hover:text-indigo-800 transition duration-150 flex items-center">
+                                + Aggiungi regalo preferito
+                            </button>
                         </div>
                     </div>
 
@@ -53,7 +81,7 @@
                 </div>
             @endforeach
 
-            {{-- aggiungi --}}
+            {{-- aggiungi partecipante --}}
             <button type="button" wire:click="addParticipant"
                 class="mt-2 text-indigo-600 text-sm font-semibold hover:text-indigo-800 transition duration-150 flex items-center">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
