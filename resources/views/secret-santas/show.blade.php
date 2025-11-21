@@ -41,11 +41,27 @@
                             <h3 class="text-sm font-semibold text-gray-700 mb-1">🎁 Regali preferiti</h3>
                             <div class="flex flex-wrap gap-2">
                                 @foreach ($participant->favoriteGifts as $gift)
-                                    <span
-                                        class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 
-                         transition-transform transform hover:scale-105 hover:shadow-md cursor-pointer">
-                                        🎁 {{ $gift->name }}
-                                    </span>
+                                    <div class="relative gift-wrapper">
+                                        {{-- Bottone regalo --}}
+                                        <button
+                                            class="gift-btn bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 hover:scale-105 hover:shadow-md transition-transform"
+                                            data-gift="{{ $gift->name }}">
+                                            🎁 {{ $gift->name }}
+                                        </button>
+
+                                        {{-- Box pubblicitario nascosto --}}
+                                        <div
+                                            class="gift-ad absolute z-10 mt-2 w-64 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm hidden">
+                                            <p class="font-semibold text-gray-700 mb-2">Annuncio per:
+                                                {{ $gift->name }}</p>
+                                            <img src="https://via.placeholder.com/150?text={{ urlencode($gift->name) }}"
+                                                alt="{{ $gift->name }}" class="mb-2 w-full rounded">
+                                            <p class="text-gray-600 text-sm">Acquista questo regalo online! Offerte
+                                                disponibili.</p>
+                                            <a href="#" class="text-blue-600 hover:underline text-sm">Vai al
+                                                negozio</a>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </div>
                         </div>
@@ -129,5 +145,22 @@
 
     @endif
 
+    {{-- Script per annunci --}}
+    <script>
+        document.querySelectorAll('.gift-wrapper').forEach(wrapper => {
+            const btn = wrapper.querySelector('.gift-btn');
+            const ad = wrapper.querySelector('.gift-ad');
+            btn.addEventListener('click', () => {
+                ad.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                //Se il click non e' ne sul bottone e ne sul ad (o cmq fuori dal wrapper), chiude la finestra dell ad
+                if (!wrapper.contains(e.target)) {
+                    ad.classList.add('hidden');
+                }
+            })
+        });
+    </script>
 
 </x-layout>
