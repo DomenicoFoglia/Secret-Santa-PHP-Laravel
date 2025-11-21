@@ -20,8 +20,8 @@
 
             <div class="space-y-4">
                 @foreach ($participants as $index => $participant)
-                    <div
-                        class="flex flex-col md:flex-row gap-2 items-center p-4 bg-gray-50 rounded-md border border-gray-200">
+                    <div class="flex flex-col md:flex-row gap-2 items-center p-4 bg-gray-50 rounded-md border border-gray-200"
+                        wire:key="participant-{{ $participant['id'] ?? $index }}">
 
                         <input type="text" wire:model="participants.{{ $index }}.name" placeholder="Nome"
                             class="flex-1 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
@@ -38,10 +38,18 @@
                     <div class="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
                         <p class="font-semibold text-gray-500 mb-2">🎁 Regali preferiti:</p>
 
+                        {{-- MODIFICA PRINCIPALE: Ora accediamo a $gift come array invece che come stringa --}}
                         @foreach ($participant['favorite_gifts'] as $giftIndex => $gift)
-                            <div class="flex items-center gap-2 mb-2">
+                            <div class="flex items-center gap-2 mb-2" {{-- MODIFICA: Aggiungiamo l'ID del regalo alla wire:key per tracking accurato --}}
+                                wire:key="gift-{{ $gift['id'] ?? $index . '-' . $giftIndex }}">
+
+                                {{-- MODIFICA CRITICA: Cambiamo wire:model da 
+                                     "participants.{{ $index }}.favorite_gifts.{{ $giftIndex }}"
+                                     a 
+                                     "participants.{{ $index }}.favorite_gifts.{{ $giftIndex }}.name"
+                                     perché ora favorite_gifts è un array di oggetti con 'id' e 'name' --}}
                                 <input type="text"
-                                    wire:model="participants.{{ $index }}.favorite_gifts.{{ $giftIndex }}"
+                                    wire:model="participants.{{ $index }}.favorite_gifts.{{ $giftIndex }}.name"
                                     placeholder="Regalo preferito"
                                     class="flex-1 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
 

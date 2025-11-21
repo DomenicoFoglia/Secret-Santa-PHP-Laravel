@@ -32,7 +32,7 @@ class SecretSantaForm extends Component
     //Rimuovi regalo preferito
     public function removeFavoriteGift($participantIndex, $giftIndex)
     {
-        unset($this->participants[$participantIndex]['favorite_gift'][$giftIndex]);
+        unset($this->participants[$participantIndex]['favorite_gifts'][$giftIndex]);
 
         $this->participants[$participantIndex]['favorite_gifts'] =  array_values($this->participants[$participantIndex]['favorite_gifts']);
     }

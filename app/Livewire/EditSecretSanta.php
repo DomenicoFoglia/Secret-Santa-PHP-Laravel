@@ -22,7 +22,12 @@ class EditSecretSanta extends Component
                 'id' => $p->id,
                 'name' => $p->name,
                 'email' => $p->email,
-                'favorite_gifts' => $p->favoriteGifts()->pluck('name')->toArray(), //pluck serve per estrarre un campo specifico da una query e lo restituiscec sotto forma di array
+                'favorite_gifts' => $p->favoriteGifts()->get()->map(function ($gift) {
+                    return [
+                        'id' => $gift->id,
+                        'name' => $gift->name,
+                    ];
+                })->toArray(),
             ];
         })->toArray();
         //toArray() serve per trasformare la collection in array
@@ -47,9 +52,12 @@ class EditSecretSanta extends Component
     public function update()
     {
 
+
         if (Auth::id() !== $this->secretSanta->user_id) {
             abort(403);
         }
+
+
 
 
         $this->validate([
@@ -63,7 +71,7 @@ class EditSecretSanta extends Component
 
             // Validazione regali preferiti
             'participants.*.favorite_gifts' => 'nullable|array',
-            'participants.*.favorite_gifts.*' => 'required|string|max:255',
+            'participants.*.favorite_gifts.*.name' => 'required|string|max:255',
         ], [
             // Messaggi evento
             'name.required' => "Il nome dell'evento è obbligatorio.",
@@ -83,10 +91,11 @@ class EditSecretSanta extends Component
             'participants.*.email.distinct' => "L'indirizzo email ':input' è già stato inserito. Le email devono essere univoche.",
 
             // Messaggi regali
-            'participants.*.favorite_gifts.*.required' => "Il nome del regalo è obbligatorio.",
-            'participants.*.favorite_gifts.*.string' => "Il regalo deve essere un testo.",
-            'participants.*.favorite_gifts.*.max' => "Il regalo non può superare i :max caratteri.",
+            'participants.*.favorite_gifts.*.name.required' => "Il nome del regalo è obbligatorio.",
+            'participants.*.favorite_gifts.*.name.string' => "Il regalo deve essere un testo.",
+            'participants.*.favorite_gifts.*.name.max' => "Il regalo non può superare i :max caratteri.",
         ]);
+
 
         //Aggiorno nome dell'evento
         $this->secretSanta->update([
@@ -95,6 +104,8 @@ class EditSecretSanta extends Component
 
 
         foreach ($this->participants as $participant) {
+
+
 
             // Partecipante esistente
             if (isset($participant['id'])) {
@@ -107,19 +118,49 @@ class EditSecretSanta extends Component
                     ]);
 
                     // Gestione regali
-                    $existingGifts = $existingParticipant->favoriteGifts()->pluck('name')->toArray();
-                    $submittedGifts = $participant['favorite_gifts'] ?? [];
+                    // Recupero tutti gli id dei regali dell'utente che vuole mantenere o aggiungere
+                    // PEr poter usare pluck trasformo l'array in una collection di laravel
+                    $submittedGiftIds = collect($participant['favorite_gifts'] ?? [])
+                        ->pluck('id') // PRende solo i lcampo id da ogni regalo
+                        ->filter()  // Rimuove valori null/vuoti
+                        ->toArray();
+
+
+                    // dd([
+                    //     'partecipante' => $existingParticipant->name,
+                    //     'regali_frontend' => $participant['favorite_gifts'],
+                    //     'gift_ids_estratti' => $submittedGiftIds,
+                    //     'regali_nel_db_prima' => $existingParticipant->favoriteGifts()->get()->toArray(),
+                    // ]);
 
                     // Regali da eliminare
-                    $toDelete = array_diff($existingGifts, $submittedGifts);
-                    $existingParticipant->favoriteGifts()->whereIn('name', $toDelete)->delete();
+                    // whereNotIn trova tutti gli id dedi regali che non sono presenti in $submittedGiftIds
+                    // quindik se da una lista di regali [1, 2, 3] l'utente ciccio ha inviato [1, 3], viene eliminato il regalo
+                    // con id 2
+                    $existingParticipant->favoriteGifts()
+                        ->whereNotIn('id', $submittedGiftIds)
+                        ->delete();
 
                     // Regali da aggiungere
-                    $toAdd = array_diff($submittedGifts, $existingGifts);
-                    foreach ($toAdd as $giftName) {
-                        $existingParticipant->favoriteGifts()->create([
-                            'name' => $giftName,
-                        ]);
+
+                    foreach ($participant['favorite_gifts'] ?? [] as $gift) {
+
+                        // Se il regalo ha un ID, significa che esiste già nel database
+                        if (isset($gift['id'])) {
+                            // AGGIORNA il regalo esistente con il nuovo nome
+                            $existingParticipant->favoriteGifts()
+                                ->where('id', $gift['id'])
+                                ->update(['name' => $gift['name']]);
+                        }
+                        // Se il regalo NON ha un ID, è un regalo nuovo da creare
+                        else {
+                            // Verifica che il nome non sia vuoto prima di crearlo
+                            if (!empty(trim($gift['name']))) {
+                                $existingParticipant->favoriteGifts()->create([
+                                    'name' => $gift['name'],
+                                ]);
+                            }
+                        }
                     }
                 }
             }
@@ -131,10 +172,13 @@ class EditSecretSanta extends Component
                 ]);
 
                 // Aggiungi regali preferiti
-                foreach ($participant['favorite_gifts'] ?? [] as $giftName) {
-                    $newParticipant->favoriteGifts()->create([
-                        'name' => $giftName,
-                    ]);
+
+                foreach ($participant['favorite_gifts'] ?? [] as $giftData) {
+                    if (!empty(trim($giftData['name']))) {
+                        $newParticipant->favoriteGifts()->create([
+                            'name' => $giftData['name'],
+                        ]);
+                    }
                 }
             }
         }
@@ -147,15 +191,15 @@ class EditSecretSanta extends Component
     //Aggiungi regalo
     public function addGift($index)
     {
-        $this->participants[$index]['favorite_gifts'][] = '';
+        $this->participants[$index]['favorite_gifts'][] = ['name' => ''];
     }
 
     //Rimuovi regalo
-    public function removeGift($index, $giftIndex)
+    public function removeGift($participantIndex, $giftIndex)
     {
-        unset($this->participants[$index]['favorite_gifts'][$giftIndex]);
+        unset($this->participants[$participantIndex]['favorite_gifts'][$giftIndex]);
 
-        $this->participants[$index]['favorite_gifts'][] = array_values($this->participants[$index]['favorite_gifts']);
+        $this->participants[$participantIndex]['favorite_gifts'] = array_values($this->participants[$participantIndex]['favorite_gifts']);
     }
 
 
