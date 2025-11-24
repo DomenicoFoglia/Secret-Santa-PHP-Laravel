@@ -62,7 +62,8 @@
                 <p class="text-gray-500">Inizia ora per organizzare la tua festa natalizia!</p>
             </div>
         @endif
-
-
     </div>
+
+
+
 </x-layout>

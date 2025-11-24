@@ -48,21 +48,14 @@
                                             data-gift="{{ $gift->name }}">
                                             🎁 {{ $gift->name }}
                                         </button>
-
-                                        {{-- Box pubblicitario nascosto --}}
-                                        <div
-                                            class="gift-ad absolute z-10 mt-2 w-64 bg-white border border-gray-300 rounded-md shadow-lg p-3 text-sm hidden">
-                                            <p class="font-semibold text-gray-700 mb-2">Annuncio per:
-                                                {{ $gift->name }}</p>
-                                            <img src="https://via.placeholder.com/150?text={{ urlencode($gift->name) }}"
-                                                alt="{{ $gift->name }}" class="mb-2 w-full rounded">
-                                            <p class="text-gray-600 text-sm">Acquista questo regalo online! Offerte
-                                                disponibili.</p>
-                                            <a href="#" class="text-blue-600 hover:underline text-sm">Vai al
-                                                negozio</a>
-                                        </div>
                                     </div>
                                 @endforeach
+                                <a href="{{ route('participants.suggestions.show', $participant->id) }}"
+                                    class="text-blue-600 hover:text-blue-800 text-sm ml-1 font-medium">
+                                    Suggerimenti
+                                </a>
+
+
                             </div>
                         </div>
                     @endif
@@ -141,26 +134,5 @@
             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">Invia email
                 ai partecipanti</button>
         </form>
-
-
     @endif
-
-    {{-- Script per annunci --}}
-    <script>
-        document.querySelectorAll('.gift-wrapper').forEach(wrapper => {
-            const btn = wrapper.querySelector('.gift-btn');
-            const ad = wrapper.querySelector('.gift-ad');
-            btn.addEventListener('click', () => {
-                ad.classList.toggle('hidden');
-            });
-
-            document.addEventListener('click', (e) => {
-                //Se il click non e' ne sul bottone e ne sul ad (o cmq fuori dal wrapper), chiude la finestra dell ad
-                if (!wrapper.contains(e.target)) {
-                    ad.classList.add('hidden');
-                }
-            })
-        });
-    </script>
-
 </x-layout>

@@ -2,8 +2,10 @@
 
 use App\Models\SecretSanta;
 use App\Livewire\ParticipantsList;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SecretSantaController;
+use App\Http\Controllers\GiftSuggestionController;
 
 Route::get('/', function () {
     if (auth()) {
@@ -29,6 +31,10 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/participants', function () {
     return view('participants');
 })->name('participants');
+
+//Regali suggeriti
+Route::get('/participants/{participant}/suggestions', [GiftSuggestionController::class, 'show'])
+    ->name('participants.suggestions.show');
 
 
 //Mail ai partecipanti
