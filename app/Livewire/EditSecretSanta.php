@@ -46,6 +46,9 @@ class EditSecretSanta extends Component
         $this->participants[] = [
             'name' => '',
             'email' => '',
+            'favorite_gifts' => [
+                ['name' => '']
+            ],
         ];
     }
 
